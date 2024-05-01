@@ -1,6 +1,7 @@
-from langchain import PromptTemplate, OpenAI, LLMChain
 from langchain.output_parsers import CommaSeparatedListOutputParser
 from langchain.chat_models import ChatOpenAI
+from langchain.memory import ConversationBufferMemory
+from langchain.chains import ConversationChain
 
 prompt_template = "What is a word to replace the following: {word}?"
 
@@ -8,11 +9,12 @@ prompt_template = "What is a word to replace the following: {word}?"
 llm = ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0)
 
 output_parser = CommaSeparatedListOutputParser()
-template = """List all possible words as substitute for 'artificial' as comma separated."""
-
-llm_chain = LLMChain(
+conversation = ConversationChain(
     llm=llm,
-    prompt=PromptTemplate(template=template, output_parser=output_parser, input_variables=[]),
-    output_parser=output_parser)
+    memory=ConversationBufferMemory()
+)
 
-print(f'{llm_chain.predict() = }')
+op = conversation.predict(input="List all possible words as substitute for 'artificial' as comma separated.")
+print(op)
+op_of_next4 = conversation.predict(input="And the next 4?")
+print(op_of_next4)
